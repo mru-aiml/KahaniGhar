@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  /* KahaniGhar design tokens (design.md) */
+  --kg-night: #1b1b3a;
+  --kg-cream: #fff4e0;
+  --kg-amber: #f6a93b;
+  --kg-teal: #2fb5a8;
+  --kg-danger: #e4572e;
+  --kg-text-on-dark: #fff4e0;
+  --kg-text-on-cream: #1b1b3a;
+
+  --background: var(--kg-night);
+  --foreground: var(--kg-text-on-dark);
+}
+
+@theme inline {
+  --color-kg-night: var(--kg-night);
+  --color-kg-cream: var(--kg-cream);
+  --color-kg-amber: var(--kg-amber);
+  --color-kg-teal: var(--kg-teal);
+  --color-kg-danger: var(--kg-danger);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-heading: var(--font-baloo2);
+  --font-body: var(--font-noto-sans);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--kg-night);
+  color: var(--kg-text-on-dark);
+  font-family: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-baloo2), "Baloo 2", system-ui, sans-serif;
+}
