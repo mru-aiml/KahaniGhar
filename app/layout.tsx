@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Baloo_2, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const baloo2 = Baloo_2({
   variable: "--font-baloo2",
@@ -29,7 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${baloo2.variable} ${notoSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-kg-night text-kg-cream">
-        {children}
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

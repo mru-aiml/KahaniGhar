@@ -1,0 +1,103 @@
+// Clearly labelled MOCK data for frontend demo. Not real AI output and not
+// Supabase persistence. Replace via lib/services/story-service.ts.
+
+import type { Story } from "@/types/story";
+
+export const MOCK_STORIES: Story[] = [
+  {
+    id: "story-1",
+    title: "दादी का आम का पेड़",
+    language: "hi-IN",
+    kind: "memory",
+    ageBand: "6-8",
+    childNickname: "चिंटू",
+    interests: ["gardening", "animals"],
+    narrator: "दादी",
+    createdAt: "2026-11-04",
+    structure: {
+      title: "दादी का आम का पेड़",
+      characters: ["चिंटू", "दादी", "मिट्टू तोता"],
+      moral: "जो चीज़ें हम बोते हैं, वही एक दिन हमें मिलती हैं।",
+      scenes: [
+        { idx: 0, text: "एक छोटे से गाँव में चिंटू अपनी दादी के साथ रहता था। दादी के आँगन में एक बड़ा आम का पेड़ था, जिस पर हर साल मीठे आम लगते थे।" },
+        { idx: 1, text: "एक दिन चिंटू ने दादी से पूछा, “दादी, यह पेड़ कैसे आया?” दादी मुस्कुराईं और बोलीं, “बेटा, तेरे नाना ने बहुत साल पहले एक बीज बोया था।”", choices: ["पेड़ के नीचे खेलो", "दादी से और कहानी सुनो"] },
+        { idx: 2, text: "चिंटू ने पेड़ के नीचे खेलना चुना। वहाँ उसे एक छोटा तोता मिला, जिसका नाम उसने मिट्टू रखा।", choices: ["मिट्टू को घर ले जाओ", "मिट्टू को पेड़ पर छोड़ दो"] },
+        { idx: 3, text: "चिंटू ने मिट्टू को पेड़ पर छोड़ दिया। मिट्टू ने चिंटू को एक चमकता हुआ आम लाकर दिया।", choices: ["आम खाओ", "आम दादी को दो"] },
+        { idx: 4, text: "चिंटू ने आम दादी को दिया। दादी बहुत खुश हुईं और बोलीं, “तू बड़ा दिलवाला है।”" },
+        { idx: 5, text: "उस रात चिंटू ने सपना देखा कि मिट्टू उसे एक जादुई बगीचे में ले गया है, जहाँ हर पेड़ पर आम लगे हैं।" },
+        { idx: 6, text: "सुबह चिंटू ने दादी के साथ एक बीज बोया, ताकि बड़ा होकर वह भी ऐसा ही पेड़ बने।" },
+      ],
+    },
+  },
+  {
+    id: "story-2",
+    title: "The Little Rocket and the Moon",
+    language: "en-IN",
+    kind: "generated",
+    ageBand: "3-5",
+    childNickname: "Mia",
+    interests: ["space", "trains"],
+    narrator: "Papa",
+    createdAt: "2026-11-03",
+    structure: {
+      title: "The Little Rocket and the Moon",
+      characters: ["Mia", "Rocket Ritu", "Moon"],
+      moral: "Curiosity and kindness can take you anywhere.",
+      scenes: [
+        { idx: 0, text: "Mia loved looking at the sky every night. One evening, a tiny rocket named Ritu landed in her garden." },
+        { idx: 1, text: "Ritu whispered, \"I lost my way to the Moon. Will you help me?\"", choices: ["Say yes and climb in", "Ask Ritu to wait"] },
+        { idx: 2, text: "Mia climbed in. The rocket hummed and lifted off gently, past the clouds and the stars." },
+        { idx: 3, text: "They reached the Moon, who was feeling lonely. \"Nobody visits me,\" said the Moon.", choices: ["Offer to play", "Sing a song"] },
+        { idx: 4, text: "Mia sang a soft lullaby. The Moon smiled and glowed brighter than ever." },
+        { idx: 5, text: "Ritu found her way home, and Mia waved goodbye from the window every night after that." },
+      ],
+    },
+  },
+  {
+    id: "story-3",
+    title: "रेलगाड़ी और छोटा हाथी",
+    language: "hi-en",
+    kind: "folklore",
+    ageBand: "6-8",
+    childNickname: "Aarav",
+    interests: ["trains", "animals"],
+    narrator: "Nani",
+    createdAt: "2026-11-02",
+    structure: {
+      title: "रेलगाड़ी और छोटा हाथी",
+      characters: ["Aarav", "Engine Eli", "Baby Hathi"],
+      moral: "Helping others makes the journey more fun.",
+      scenes: [
+        { idx: 0, text: "Aarav was on a train ride with Nani. The train stopped near a forest, and a baby elephant was blocking the track." },
+        { idx: 1, text: "Engine Eli tooted loudly, but the baby elephant was scared and wouldn't move.", choices: ["Offer a banana", "Sing a gentle song"] },
+        { idx: 2, text: "Aarav sang softly. The baby elephant calmed down and stepped aside." },
+        { idx: 3, text: "The train moved on, and the baby elephant waved its trunk happily.", choices: ["Wave back", "Throw more bananas"] },
+        { idx: 4, text: "Aarav waved back. The baby elephant smiled and ran into the forest with its family." },
+        { idx: 5, text: "Nani hugged Aarav and said, \"Kindness is the best ticket to anywhere.\"" },
+      ],
+    },
+  },
+  {
+    id: "story-4",
+    title: "पावसाळ्यातील चिऊ",
+    language: "mr-IN",
+    kind: "memory",
+    ageBand: "3-5",
+    childNickname: "Isha",
+    interests: ["animals", "rivers"],
+    narrator: "आजी",
+    createdAt: "2026-11-01",
+    structure: {
+      title: "पावसाळ्यातील चिऊ",
+      characters: ["Isha", "चिऊ पक्षी", "आजी"],
+      moral: "छोट्या मित्रांची काळजी घेणे ही मोठी गोष्ट आहे.",
+      scenes: [
+        { idx: 0, text: "पावसाळ्यात Isha आजीसोबत गावी गेली होती. एका दिवशी तिला एक भिजलेला चिऊ पक्षी आढळला." },
+        { idx: 1, text: "चिऊ थरथरत होता. Isha ने त्याला आजीच्या घरी आणले.", choices: ["चिऊला दूध द्या", "चिऊला थंड पाणी द्या"] },
+        { idx: 2, text: "Isha ने त्याला थोडे दूध दिले. चिऊला बरे वाटले आणि तो गाणे गाऊ लागला." },
+        { idx: 3, text: "दुसऱ्या दिवशी चिऊ बरा झाला आणि तो उडून गेला, पण रोज सकाळी आजीच्या घरावर येऊन गाणे गातो.", choices: ["चिऊला धान्य ठेवा", "चिऊला नमस्कार करा"] },
+        { idx: 4, text: "Isha ने त्याला धान्य ठेवले. चिऊ आनंदाने गाणे गात राहिला." },
+      ],
+    },
+  },
+];
