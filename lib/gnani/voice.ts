@@ -35,6 +35,17 @@ const VC_TIMEOUT_MS = 60_000;
 export async function createEmbedding(audio: Blob | Buffer | ArrayBuffer, filename = "sample.wav"): Promise<SpeakerEmbedding> {
   requireServerSecret("GNANI_API_KEY", config.gnani.apiKey);
 
+  const size =
+    audio instanceof Blob ? audio.size : audio instanceof ArrayBuffer ? audio.byteLength : (audio as Buffer).byteLength;
+  if (!size || size <= 0) {
+    throw new GnaniRequestError({
+      code: "EMPTY_AUDIO",
+      message: "Voice sample is empty",
+      retryable: false,
+      status: 400,
+    });
+  }
+
   const form = new FormData();
   const blob =
     audio instanceof Blob

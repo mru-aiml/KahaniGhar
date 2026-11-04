@@ -1,6 +1,14 @@
 // Centralized configuration. Model names, voice ids, URLs and API config come
 // from environment variables only (rules.md C3). No hardcoded model strings
 // elsewhere. Server-only secrets must never be imported into client code.
+//
+// Guard: this module must only be imported in server code (route handlers,
+// server components, server actions). Importing it from a client component
+// throws at runtime, preventing secret leakage into the browser bundle.
+
+if (typeof window !== "undefined") {
+  throw new Error("lib/config must not be imported in client code");
+}
 
 export const config = {
   gnani: {

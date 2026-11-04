@@ -51,6 +51,7 @@ export interface TranscribeOptions {
 
 export async function transcribe(options: TranscribeOptions): Promise<SttResult> {
   requireServerSecret("GNANI_API_KEY", config.gnani.apiKey);
+  validateSttAudio(options.audio);
 
   const languageCode = options.languageCode ?? config.gnani.sttLanguage;
   const model = options.model ?? config.gnani.sttModel;
@@ -150,6 +151,37 @@ export async function transcribe(options: TranscribeOptions): Promise<SttResult>
   }
 }
 
+// Validate an audio payload before sending to Gnani STT. Enforces the 30s
+// limit indirectly via size cap; the recorder UI must also stop at 30s and the
+// backend route must reject oversize payloads. Gnani enforces 30s server-side.
+const MAX_AUDIO_BYTES = 5 * 1024 * 1024; // ~5MB safety cap for <=30s clips
+
+export function validateSttAudio(audio: Blob | Buffer | ArrayBuffer): void {
+  const size =
+    audio instanceof Blob
+      ? audio.size
+      : audio instanceof ArrayBuffer
+        ? audio.byteLength
+        : (audio as Buffer).byteLength;
+  if (!size || size <= 0) {
+    throw new GnaniRequestError({
+      code: "EMPTY_AUDIO",
+      message: "Audio payload is empty",
+      retryable: false,
+      status: 400,
+    });
+  }
+  if (size > MAX_AUDIO_BYTES) {
+    throw new GnaniRequestError({
+      code: "MAX_AUDIO_SIZE_EXCEEDED",
+      message: `Audio payload exceeds ${MAX_AUDIO_BYTES} bytes`,
+      retryable: false,
+      status: 400,
+    });
+  }
+}
+
 export const STT_LIMITS = {
   maxDurationSeconds: MAX_AUDIO_DURATION_S,
+  maxBytes: MAX_AUDIO_BYTES,
 } as const;

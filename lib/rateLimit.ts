@@ -17,6 +17,12 @@ const buckets = new Map<string, Bucket>();
 export function checkRateLimit(key: string, limitPerMin: number): { allowed: boolean; retryAfterMs: number } {
   const now = Date.now();
   const windowMs = 60_000;
+  // Opportunistic cleanup to avoid unbounded growth.
+  if (buckets.size > 1000) {
+    for (const [k, v] of buckets) {
+      if (now > v.resetAt) buckets.delete(k);
+    }
+  }
   const b = buckets.get(key);
   if (!b || now > b.resetAt) {
     buckets.set(key, { count: 1, resetAt: now + windowMs });

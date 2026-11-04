@@ -91,9 +91,23 @@ alter table recordings enable row level security;
 alter table stories enable row level security;
 alter table scenes enable row level security;
 
--- Storage buckets (create in dashboard or via SQL):
---   recordings (private), tts-cache (private)
--- Server uses service role; never expose speaker_embedding to client.
+-- Storage buckets (create in dashboard or via SQL). Both must be PRIVATE.
+-- Server uses service role + signed URLs; never expose raw paths to clients.
+--
+-- SQL alternative (run as service role):
+--   insert into storage.buckets (id, name, public) values ('recordings', 'recordings', false) on conflict do nothing;
+--   insert into storage.buckets (id, name, public) values ('tts-cache', 'tts-cache', false) on conflict do nothing;
+--
+-- RLS on storage.objects is enabled by default. With no policies, anon/authenticated
+-- cannot read objects; only the service role can. Keep it that way. If you add
+-- policies later, scope them to the owning family only.
+
+-- RLS policy note:
+-- With RLS enabled and NO policies, anon/authenticated have zero access (deny by
+-- default). The server uses the service role, which bypasses RLS, and MUST call
+-- the assert* helpers in lib/db/queries.ts to enforce family ownership.
+-- Do NOT add broad "using (true)" policies. Any future read policy must be
+-- scoped to the requesting user's family.
 
 -- Seed example (uncomment and adjust for your demo family):
 -- insert into families (id, name) values ('00000000-0000-0000-0000-000000000001', 'Demo Family');

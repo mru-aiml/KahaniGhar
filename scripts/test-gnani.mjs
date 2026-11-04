@@ -1,10 +1,26 @@
 // Phase 0 verification script: real Gnani STT + TTS calls.
-// Usage:
-//   GNANI_API_KEY=xxx AUDIO_PATH=/path/to/clip.wav node scripts/test-gnani.mjs
-// Optional: GNANI_BASE_URL, GNANI_STT_MODEL, GNANI_TTS_MODEL, GNANI_STT_LANGUAGE
+// Usage (PowerShell):
+//   $env:GNANI_API_KEY="your-key"; $env:AUDIO_PATH="C:\path\to\clip.wav"; node scripts/test-gnani.mjs
+// Or fill .env.local and run: node scripts/test-gnani.mjs  (auto-loads .env.local)
+// Optional env: GNANI_BASE_URL, GNANI_STT_MODEL, GNANI_TTS_MODEL, GNANI_STT_LANGUAGE
 // This script makes REAL API calls and consumes credits.
 
 import fs from "node:fs";
+import path from "node:path";
+
+// Auto-load .env.local if present (simple KEY=VALUE, no quotes handling beyond trim).
+const envPath = path.resolve(process.cwd(), ".env.local");
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim();
+    if (key && process.env[key] === undefined) process.env[key] = val;
+  }
+}
 
 const API_KEY = process.env.GNANI_API_KEY;
 const BASE = process.env.GNANI_BASE_URL || "https://api.vachana.ai";
@@ -14,7 +30,7 @@ const STT_LANG = process.env.GNANI_STT_LANGUAGE || "hi-IN";
 const AUDIO_PATH = process.env.AUDIO_PATH;
 
 if (!API_KEY) {
-  console.error("ERROR: set GNANI_API_KEY");
+  console.error("ERROR: set GNANI_API_KEY (or put it in .env.local)");
   process.exit(1);
 }
 
@@ -38,8 +54,9 @@ async function testTts() {
     return;
   }
   const buf = Buffer.from(await res.arrayBuffer());
-  fs.writeFileSync("tts-test.wav", buf);
-  console.log("OK: wrote tts-test.wav", buf.length, "bytes");
+  const out = path.resolve(process.cwd(), "tts-test.wav");
+  fs.writeFileSync(out, buf);
+  console.log("OK: wrote", out, buf.length, "bytes");
 }
 
 async function testStt() {
@@ -50,7 +67,8 @@ async function testStt() {
   console.log(`\n--- STT REST (${STT_MODEL}, ${STT_LANG}) ---`);
   const form = new FormData();
   const buf = fs.readFileSync(AUDIO_PATH);
-  form.append("audio_file", new Blob([buf]), AUDIO_PATH.split("/").pop() || "clip.wav");
+  const filename = path.basename(AUDIO_PATH);
+  form.append("audio_file", new Blob([buf]), filename);
   if (STT_MODEL) form.append("model", STT_MODEL);
   form.append("language_code", STT_LANG);
   const res = await fetch(`${BASE}/stt/v3`, {
