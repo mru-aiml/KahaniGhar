@@ -27,6 +27,7 @@ export interface GnaniError {
   message: string;
   retryable: boolean;
   status: number;
+  details?: Record<string, unknown>;
 }
 
 export class GnaniRequestError extends Error {

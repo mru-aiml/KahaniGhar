@@ -8,6 +8,7 @@ export type StoryLanguage = "hi-IN" | "en-IN" | "hi-en" | "mr-IN" | "ta-IN" | "t
 export interface StoryScene {
   idx: number;
   text: string;
+  /** 2-3 choices when present (enforced by LLM schema) */
   choices?: string[];
 }
 
@@ -28,9 +29,9 @@ export interface Story {
   interests: string[];
   narrator: string;
   structure: StoryStructure;
+  /** Full ISO 8601 timestamp with timezone, e.g. 2026-11-05T14:30:00.123Z */
   createdAt: string;
-  // Optional audio for demo playback (public path or signed URL later)
-  audioUrl?: string;
+  // Audio URLs are per-scene, returned by TTS API; not stored on Story.
 }
 
 export interface ChildProfile {
@@ -52,6 +53,14 @@ export interface StoryFilters {
   language?: StoryLanguage | "all";
   kind?: StoryKind | "all";
   narrator?: string | "all";
+}
+
+export interface StoryService {
+  list(): Promise<Story[]>;
+  get(id: string): Promise<Story | null>;
+  create(input: CreateStoryInput): Promise<Story>;
+  remove(id: string): Promise<void>;
+  search(filters: StoryFilters): Promise<Story[]>;
 }
 
 export const LANGUAGE_LABELS: Record<StoryLanguage, string> = {

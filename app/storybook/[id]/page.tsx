@@ -3,24 +3,64 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { storyService } from "@/lib/services/story-service";
 import { LANGUAGE_LABELS } from "@/types/story";
 import type { Story } from "@/types/story";
 
-export default function StorybookPage() {
+function StorybookContent() {
   const params = useParams<{ id: string }>();
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    storyService.get(params.id).then((s) => {
-      setStory(s);
-      setLoading(false);
-    });
+    let active = true;
+    setError(null);
+    storyService
+      .get(params.id)
+      .then((s) => {
+        if (active) {
+          setStory(s);
+          setLoading(false);
+          if (!s) setError("Story not found");
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setError("Failed to load story");
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, [params.id]);
 
   if (loading) return <div className="py-16 text-center text-kg-cream/60">Opening the book...</div>;
-  if (!story) return <div className="py-16 text-center text-kg-cream/60">Story not found.</div>;
+  if (error) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <div className="text-5xl" role="img" aria-label="Error">😔</div>
+        <h1 className="mt-4 font-heading text-2xl text-kg-cream">Couldn&apos;t load story</h1>
+        <p className="mt-2 text-kg-cream/70">{error}</p>
+        <Link href="/library" className="mt-4 inline-block text-kg-teal hover:text-kg-amber">
+          Back to storybook
+        </Link>
+      </div>
+    );
+  }
+  if (!story) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <div className="text-5xl" role="img" aria-label="Error">😔</div>
+        <h1 className="mt-4 font-heading text-2xl text-kg-cream">Story not found</h1>
+        <Link href="/library" className="mt-4 inline-block text-kg-teal hover:text-kg-amber">
+          Back to storybook
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -44,7 +84,7 @@ export default function StorybookPage() {
         <div className="rounded-2xl border border-kg-amber/30 bg-kg-cream/10 p-6">
           <h2 className="font-heading text-xl text-kg-amber">{story.title}</h2>
           <p className="mt-2 text-sm text-kg-cream/60">
-            Narrator: {story.narrator} · {story.childNickname} · {story.ageBand}
+            Narrator: {story.narrator} &middot; {story.childNickname} &middot; {story.ageBand}
           </p>
           <div className="mt-4 space-y-3">
             {story.structure.scenes.map((s) => (
@@ -60,5 +100,13 @@ export default function StorybookPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function StorybookPage() {
+  return (
+    <ErrorBoundary>
+      <StorybookContent />
+    </ErrorBoundary>
   );
 }

@@ -16,6 +16,7 @@ export const StoryStructureSchema = z.object({
   characters: z.array(z.string().min(1)).min(1),
   moral: z.string().min(1),
   scenes: z.array(StorySceneSchema).min(5).max(8),
+  interests: z.array(z.string()).default([]),
 });
 
 export type StoryStructure = z.infer<typeof StoryStructureSchema>;

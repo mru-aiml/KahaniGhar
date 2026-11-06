@@ -1,40 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import StoryCard from "@/components/StoryCard";
 import EmptyState from "@/components/EmptyState";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
-import { storyService } from "@/lib/services/story-service";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import LoadingLantern from "@/components/LoadingLantern";
+import { getStoryService } from "@/lib/services/registry";
 import type { Story, StoryFilters } from "@/types/story";
 import { LANGUAGE_LABELS } from "@/types/story";
 
-export default function LibraryPage() {
+function LibraryContent() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<StoryFilters>({ query: "", language: "all", kind: "all", narrator: "all" });
   const [deleteTarget, setDeleteTarget] = useState<Story | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
-    const res = await storyService.search(filters);
-    setStories(res);
-    setLoading(false);
-  };
+    setError(null);
+    try {
+      const service = getStoryService();
+      const res = await service.search(filters);
+      setStories(res);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load stories";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [load]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await storyService.remove(deleteTarget.id);
-    setDeleteTarget(null);
-    load();
+    try {
+      const service = getStoryService();
+      await service.remove(deleteTarget.id);
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to delete story";
+      setError(message);
+    }
   };
-
-  const narrators = Array.from(new Set(stories.map((s) => s.narrator)));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -75,7 +88,7 @@ export default function LibraryPage() {
           className="rounded-xl border border-white/20 bg-kg-night/60 px-3 py-2 text-kg-cream"
         >
           <option value="all">All narrators</option>
-          {narrators.map((n) => (
+          {Array.from(new Set(stories.map((s) => s.narrator))).map((n) => (
             <option key={n} value={n}>{n}</option>
           ))}
         </select>
@@ -83,7 +96,19 @@ export default function LibraryPage() {
 
       <div className="mt-8">
         {loading ? (
-          <p className="text-kg-cream/60">Loading...</p>
+          <LoadingLantern label="Loading your storybook..." />
+        ) : error ? (
+          <div className="rounded-2xl border border-kg-danger/30 bg-kg-danger/10 p-6 text-center">
+            <div className="text-3xl" role="img" aria-label="Error">😔</div>
+            <h3 className="mt-2 font-heading text-lg text-kg-cream">Couldn&apos;t load stories</h3>
+            <p className="mt-1 text-sm text-kg-cream/70">{error}</p>
+            <button
+              onClick={load}
+              className="mt-3 rounded-full bg-kg-amber px-4 py-2 text-sm text-kg-night"
+            >
+              Try again
+            </button>
+          </div>
         ) : stories.length === 0 ? (
           <EmptyState title="No stories found" description="Try a different search or create a new story." />
         ) : (
@@ -105,5 +130,13 @@ export default function LibraryPage() {
         onCancel={() => setDeleteTarget(null)}
       />
     </div>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <ErrorBoundary>
+      <LibraryContent />
+    </ErrorBoundary>
   );
 }

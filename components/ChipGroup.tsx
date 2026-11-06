@@ -10,7 +10,7 @@ export default function ChipGroup<T extends string>({
   onToggle: (value: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Interests">
       {options.map((opt) => {
         const active = selected.includes(opt);
         return (
@@ -18,6 +18,8 @@ export default function ChipGroup<T extends string>({
             key={opt}
             type="button"
             onClick={() => onToggle(opt)}
+            role="checkbox"
+            aria-checked={active}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               active
                 ? "border-kg-amber bg-kg-amber text-kg-night"
